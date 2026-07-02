@@ -1,0 +1,5 @@
+# 本地示例 deck（体积大、任务专属），不纳入 skill 仓库
+example/
+
+# macOS
+.DS_Store
