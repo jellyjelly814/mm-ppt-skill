@@ -147,7 +147,7 @@ archetypes:
   transition:  "过渡页 — bg-coral-cta; eyebrow PART NN; one big white forward line; gold arrow; logo-and-tagline-white; light footer optional."
   body:        "正文页 — bg-light-rings-red; eyebrow + page-title header; content starts CLOSE under the title (content-region top ≈ 262–322px, ~55–60px below the title — never floated to mid-page); card-panel of 3 white cards OR 2-col text+metric; footer bar."
   quote:       "金句页 — bg-light-mark; oversized coral quote glyph; big MiSans statement (left ~60%) with coral keyword highlights; cite line."
-  closing:     "封底 — bg-cover-coral (same art as the cover); BIG logo-and-tagline-white top-left (~240px, start ~top:96); a small white tagline line below it (~40px, ~top:452); the REAL QR(s) captured in Phase 0 (官网 and/or 公众号) bottom-left (~top:788, left:40; ~186px white rounded tile + ~24px white label) — never a 'QR' placeholder; NO contact block, NO footer bar."
+  closing:     "封底 — bg-cover-coral (same art as the cover); BIG logo-and-tagline-white top-left (~240px, start ~top:96); a small white tagline line below it (~40px, ~top:452); the REAL QR(s) the user chose in Phase 0 — any channel(s), don't assume 官网 (官网 / 微信 / 公众号 / 小红书 / 飞书群 / 活动码…) — bottom-left (~top:788, left:40; ~186px white rounded tile + ~24px white label = that channel's name) — never a 'QR' placeholder; NO contact block, NO footer bar."
   image-text:  "图文页 — lv-split: left eyebrow+title+lead+bullets, right a coral-gradient visual OR a media-frame product screenshot; footer bar."
   metrics:     "数据页 — 3 metric cells on a panel; Outfit numerals in coral with ink %."
   charts:      "图表页 — horizontal bar chart (one coral series, rest slate-blue) + conic-gradient donut + brand-color legend."
@@ -232,7 +232,7 @@ Content density: this is a **reading-capable** brand deck. A body page comfortab
 
 **(e) 章节页 Section** — `bg-section-red`. Huge Outfit `section-number` (03) beside/above a MiSans `display` chapter title; a vertical **mini-TOC** of chapters with the current one in white/gold and the rest at 55% white. `footer-bar` (white logo). This is the heavier numbered chapter opener (distinct from the transition's single-line bridge).
 
-Plus **目录 TOC** (light; Outfit coral-deep index numbers + MiSans items) and **封底 closing** (matches the master template: `bg-cover-coral`, a **big logo-and-tagline-white top-left ~240px** (~top:96), a small white tagline line (~top:452), and the **real QR(s) from Phase 0 at bottom-left** (~top:788, `left:40`) — 官网 and/or 公众号, white rounded tile + white label, **tile & caption sharing one center (pad width = tile width)**; **never a "QR" placeholder**; no contact block, no footer bar).
+Plus **目录 TOC** (light; Outfit coral-deep index numbers + MiSans items) and **封底 closing** (matches the master template: `bg-cover-coral`, a **big logo-and-tagline-white top-left ~240px** (~top:96), a small white tagline line (~top:452), and the **real QR(s) the user picked in Phase 0 at bottom-left** (~top:788, `left:40`) — **any channel, don't default to 官网** (官网 / 微信 / 公众号 / 小红书 / 飞书群 / 活动码…), white rounded tile + white label set to **that channel's name**, **tile & caption sharing one center (pad width = tile width)**; **never a "QR" placeholder**; no contact block, no footer bar).
 
 ### Extended page library (content variants)
 
