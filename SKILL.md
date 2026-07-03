@@ -47,7 +47,7 @@ Never start generating cold. Run **one lean round** of questions, then confirm a
    - 客户提案 → mid density, brand-forward, cases + metrics, ~10–16 pages.
    - 团队复盘 / 培训 → high density, reading-first, cards/tables/annotations, ~12–20 pages.
    - 公开宣讲 → low density, 金句 + 大图, minimal words, more pages.
-3. **Source media** (only if the doc has images/videos/links) — 全部嵌入 (download + compress) / 精选关键 / 纯文字.
+3. **Source media** — if the source carries images / videos / **audio**, **default to embedding them all** (download + compress). Don't offer "纯文字" as an equal option; only ask whether to *trim* when there's a lot (全部嵌入 [default] / 精选关键). Real media beats paragraphs — proactively pull every screenshot, clip & recording onto the slides.
 4. **Delivery** — 本地 HTML / 导出 PDF / 发布在线链接 (changes how you finish; see below).
 5. **Cover + closing info** (free text) — 汇报人, 职位/角色, deck 标题 + 副标题, 日期/场合 → cover; AND **封底二维码放什么** (官网 / 公众号 / 活动码…): ask for a URL (generate the QR with `segno`) or an image, and **place the real QR — never ship a "QR" placeholder**. Infer the deck title from the doc if not given.
 
@@ -70,20 +70,24 @@ Never start generating cold. Run **one lean round** of questions, then confirm a
 
 ## Doc → Deck pipeline
 1. **Fetch content.** Feishu doc/wiki → `lark-cli docs +fetch --doc "<url>" --doc-format markdown` (skill: `lark-doc`; first-run auth via `lark-shared`). Also grab the outline: `--scope outline --max-depth 3`. Other sources → read the file.
-2. **Extract** the structure (headings), every media ref (`<img>` / `<source>` / `<whiteboard>` tokens & urls), and every real link.
+2. **Extract** the structure (headings), **every media ref — images, videos, audio, whiteboards** (`<img>` / `<video>` / `<source>` / `<audio>` / `<whiteboard>` tokens & urls), and every real link. Assume each one goes into the deck unless it's clearly redundant.
 3. **Download media** into the deck's local `media/`:
    - images/videos → `lark-cli docs +media-download --token <token> --output media/x.png|mp4` (robust, no expiry) or `curl -sL "<authcode-url>"`.
    - whiteboards → `lark-cli docs +media-download --type whiteboard --token <token>`.
-4. **Compress videos** (screen-recordings are 30–45MB each):
-   `ffmpeg -i in.mp4 -vf "scale='min(1280,iw)':-2" -c:v libx264 -crf 30 -preset veryfast -c:a aac -b:a 96k -movflags +faststart out.mp4`
-   Keep `-c:a aac` to preserve narration; only `-an` if genuinely silent. (107MB → ~6.5MB in the example.)
+   - audio → `lark-cli docs +media-download --token <token> --output media/x.m4a` (feishu 语音 / 录音附件).
+4. **Compress before embedding** (video screen-recordings are 30–45MB each; raw audio/wav is heavy too):
+   - video → `ffmpeg -i in.mp4 -vf "scale='min(1280,iw)':-2" -c:v libx264 -crf 30 -preset veryfast -c:a aac -b:a 96k -movflags +faststart out.mp4`
+   - audio → `ffmpeg -i in.wav -c:a aac -b:a 128k -movflags +faststart out.m4a` (or mp3 128k)
+   Keep the audio track (`-c:a aac`) to preserve narration; only `-an` if genuinely silent. (107MB → ~6.5MB in the example.)
 5. **Author slides** from components: cover/toc/section + `level-detail` (lv-split + demo video) + `case-gallery` (media2/media3 of screenshots/whiteboards) + `metrics`/`charts` + quote + `link-btn`/`link-chip`/`prompt-box` + closing.
 6. **Assemble** by reusing `gallery.html`'s head: split it at `id="deckStage">` … `\n</main>`, drop your `<section>`s in between, keep the tail (JS). This inherits the whole stylesheet. Keep a deck's task-specific media in its own local `media/` folder and reference the skill's shared `assets/…`.
 7. **Render-verify** (below). Fix any `OVERFLOW`, then open.
 
 ## Media, video & links (rules — full detail in design.md)
+- **Proactively embed source media** — if the doc has images / videos / audio, download → compress → place them; a text-only deck built from a media-rich source is a miss, not the safe default.
 - Screenshots/videos go in a `media-frame` (`.contain` for wide whiteboards). Grid via `media2`/`media3` (rows are height-locked so frames shrink, never overflow).
 - Video: `<video autoplay muted loop playsinline controls>`. Browsers **block autoplay-with-sound** — muted autoplay previews, `controls` let viewers un-mute. Always compress first.
+- Audio: narration / recordings go in `<audio controls>` inside a card (声波/喇叭 line-SVG + 标题 + caption, `<audio style="width:100%">`). No autoplay (sound is blocked) — click to play. Compress to ~128k first.
 - Links: `link-btn` (CTA: 领取/体验同款/预约) · `link-chip` (reference URLs) · `prompt-box` (a copy-me agent instruction).
 
 ## Render-verify (mandatory before delivery)

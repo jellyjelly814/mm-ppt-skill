@@ -222,7 +222,7 @@ Content density: this is a **reading-capable** brand deck. A body page comfortab
 
 ## The Five Page Archetypes (recipes)
 
-**(a) 标题页 Title** — `bg-cover-coral`. **Top-anchored title block** (start ~top:170px): big white `display` title (~120–164px, 1–2 lines) → white `subtitle` (~44px, weight 500) → a short **gold accent line** (340×6px, `--gold`, radius 3). A **presenter line** sits upper-middle (~top:600px), white ~34px: **name + role separated by spaces — no “汇报人” label, no date** (e.g. `Jelly    MiniMax 开放平台运营`). `logo-and-tagline-white` bottom-left (~88px, `bottom:84`). No footer bar, no eyebrow. Keep the title clear of the right-side brand art (stay left of ~x:1300).
+**(a) 标题页 Title** — `bg-cover-coral`. **Top-anchored title block** (start ~top:170px): big white `display` title (~120–164px, 1–2 lines) → white `subtitle` (~44px, weight 500) → a short **gold accent line** (340×6px, `--gold`, radius 3). A **presenter line** sits upper-middle (~top:600px), white ~34px: **name + role separated by spaces — no “汇报人” label, no date** (e.g. `姓名    团队 / 角色`; fill from Phase 0 — never ship a hard-coded person). `logo-and-tagline-white` bottom-left (~88px, `bottom:84`). No footer bar, no eyebrow. Keep the title clear of the right-side brand art (stay left of ~x:1300).
 
 **(b) 正文页 Body** — `bg-light-rings-red`. Header: coral `eyebrow` + ink `page-title` (e.g. 构建围绕 AI 实验的创新文化), small `tag-pill` top-right. Body **starts close under the title** (content-region top ≈ 262–322px, ~55–60px below the title — not floated to mid-page): a `card-panel` holding 3 white `card`s (icon-dot + ink subhead + slate body), OR a 2-column split (left lead + bullets, right a `metric` or product image). `footer-bar` (logo-colorful on this light bg) bottom.
 
@@ -249,13 +249,15 @@ All are built from the documented components — no new primitives. See `gallery
 
 ## Media, Video & Links
 
-Real screenshots, videos, and clickable links are first-class — a brand deck that shows real product/results beats one full of placeholders.
+Real screenshots, videos, **audio**, and clickable links are first-class — a brand deck that shows real product/results beats one full of placeholders. **When the source carries any media, proactively embed it** (download → compress → place); don't fall back to a text-only deck when there are real clips, recordings, or images to show.
 
 **Images.** Put every real screenshot in a `{components.media-frame}`. Use `object-fit:cover` for UI captures that fill the frame; use `.contain` (on a `{colors.panel}` bg) for **wide whiteboards / infographics** so nothing is cropped. Add a MiSans title + slate caption beneath. Grid them with `media3` (3-up) or `media2` (2-up), whose rows are height-locked (`grid-template-rows:1fr` + item `min-height:0`) so frames shrink to fit — never overflow.
 
 **Video.** Embed with `<video autoplay muted loop playsinline controls>`. Two hard rules:
 - **Browsers block autoplay WITH sound.** Muted autoplay gives a silent looping preview; `controls` let the viewer un-mute to hear narration. Never expect sound on load.
 - **Compress before embedding.** Source screen-recordings are huge (30–45MB each). Run `ffmpeg -i in.mp4 -vf "scale='min(1280,iw)':-2" -c:v libx264 -crf 30 -preset veryfast -c:a aac -b:a 96k -movflags +faststart out.mp4` → ~0.2–1MB each. Keep `-c:a aac` to **preserve narration**; only use `-an` when the clip is genuinely silent. (107MB → 6.5MB in the example.)
+
+**Audio.** Put narration, interviews, or 语音 samples in an `<audio controls style="width:100%">` inside a card — a 声波/喇叭 line-SVG (`stroke="currentColor"`, no emoji) + MiSans title + slate caption. **No autoplay** (browsers block audio-with-sound on load, same as video) — the viewer clicks to play. Compress raw audio first: `ffmpeg -i in.wav -c:a aac -b:a 128k -movflags +faststart out.m4a` (or mp3 128k). Audio lives in the deck's local `media/`.
 
 **Links.** Turn every real URL into a clickable element: `{components.link-btn}` for CTAs (领取 / 体验同款 / 预约), `{components.link-chip}` for reference URLs (github, 回放, 作品集). Prompts the doc wants people to copy go in a `{components.prompt-box}`.
 
