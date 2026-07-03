@@ -81,17 +81,22 @@ Never start generating cold. Run **one lean round** of questions, then confirm a
    Keep the audio track (`-c:a aac`) to preserve narration; only `-an` if genuinely silent. (107MB → ~6.5MB in the example.)
 5. **Author slides** from components: cover/toc/section + `level-detail` (lv-split + demo video) + `case-gallery` (media2/media3 of screenshots/whiteboards) + `metrics`/`charts` + quote + `link-btn`/`link-chip`/`prompt-box` + closing.
 6. **Assemble** by reusing `gallery.html`'s head: split it at `id="deckStage">` … `\n</main>`, drop your `<section>`s in between, keep the tail (JS). This inherits the whole stylesheet. Keep a deck's task-specific media in its own local `media/` folder and reference the skill's shared `assets/…`.
-7. **Render-verify** (below). Fix any `OVERFLOW`, then open.
+7. **Render-verify** (below). Fix any `OVERFLOW` or 遮挡 (occlusion), then open.
 
 ## Media, video & links (rules — full detail in design.md)
 - **Proactively embed source media** — if the doc has images / videos / audio, download → compress → place them; a text-only deck built from a media-rich source is a miss, not the safe default.
 - Screenshots/videos go in a `media-frame` (`.contain` for wide whiteboards). Grid via `media2`/`media3` (rows are height-locked so frames shrink, never overflow).
+- **No occlusion.** Bare text (title/quote/lead/bullets/caption) sits in the background's **safe zone** (design.md → Safe zones), clear of the brand art; opaque cards/frames MAY cover art. Put a frame's title above & caption below — never bare text over an image/video (only the opaque `play-badge`); give `lv-split`/`split` a `gap ≥ 70px`; keep every element's bottom ≤ ~950 clear of the footer.
 - Video: `<video autoplay muted loop playsinline controls>`. Browsers **block autoplay-with-sound** — muted autoplay previews, `controls` let viewers un-mute. Always compress first.
 - Audio: narration / recordings go in `<audio controls>` inside a card (声波/喇叭 line-SVG + 标题 + caption, `<audio style="width:100%">`). No autoplay (sound is blocked) — click to play. Compress to ~128k first.
 - Links: `link-btn` (CTA: 领取/体验同款/预约) · `link-chip` (reference URLs) · `prompt-box` (a copy-me agent instruction).
 
 ## Render-verify (mandatory before delivery)
-Screenshot every page with headless Chrome/Playwright at 1280×720 (dsf 1.5), assert no element exceeds the 1920×1080 stage (`OVERFLOW=[]`), and eyeball each for legibility/collision. Fix by shrinking a title, switching to a quieter background, or splitting the slide — never let content overflow.
+Screenshot every page with headless Chrome/Playwright at 1280×720 (dsf 1.5). **Two gates:**
+1. **Overflow** — assert no element exceeds the 1920×1080 stage (`OVERFLOW=[]`).
+2. **Occlusion / 遮挡** — eyeball every page for collisions: (a) bare text on background art (esp. a saturated color block) so it's hard to read; (b) any element overlapping the footer bar; (c) a two-column text block & media touching; (d) a caption laid over an image; (e) a title/quote hitting a corner M/X mark. Check bare-text positions against each background's **safe zone** (design.md → Safe zones). Opaque `card`/`media-frame` covering art is fine — only bare text / transparent elements count.
+
+Fix by moving text into the safe zone, shrinking a title, switching to a quieter background (`bg-light-arc`), wrapping the text in a `card`, or splitting the slide — never ship overlap or overflow.
 
 ## Non-negotiable brand rules
 Coral only in art + accents; headlines ink-on-white / white-on-coral (never coral); every numeral & pure-Latin word in Outfit, every CJK run in MiSans, one ASCII space between them; **never break CJK mid-word (自｜动) or strand a Latin token at a line-end** (`word-break:keep-all` on blurbs/cards, `<br>` + `.nb` nowrap on titles/quotes so keywords like 「生成」 never split); **no emoji anywhere — use inline SVG line icons (`stroke="currentColor"`) in `icon`/`glyph` boxes**; cards are white-on-`#F3F4F7` with **no borders/shadows** (depth = tint + radius); on content pages the body **sits close under the title** (content-region top ≈ 262–322px, only a ~55–60px gap — never stranded mid-page); footer logo bar on every non-cover slide (**logo bottom-left + "Intelligence with Everyone" wordmark bottom-right — no page number; colorful logo+tagline on light bg, white on dark/coral bg**); **封底 = big logo-and-tagline-white top-left + the real QR(s) the user chose in Phase 0 bottom-left (`left:40`; caption = that channel's name — 官网/微信/公众号/小红书/飞书…, don't assume 官网; never a "QR" placeholder, no contact block; QR tile + caption share one center, so set pad width = tile width)**; smallest on-slide text **≥ 24px** (never tiny); MiSans/Outfit/DM Sans self-hosted from `assets/fonts` (fallback → PingFang SC → Noto Sans SC → system).

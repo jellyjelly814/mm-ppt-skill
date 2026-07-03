@@ -214,6 +214,23 @@ Backgrounds are **real brand PNGs**, not CSS fakes. Pick by register:
 
 Place full-bleed at `0,0,1920×1080`, `object-fit: cover`. Logos: `logo-and-tagline-white.png` (full lockup) for cover/closing big-logo moments; compact wordmark in footers — **logo-colorful on light, logo-white on dark** (logo-black available). Never all-black by default — match logo/tagline color to the background. Keep the logo's clear-space ≥ its cap height.
 
+### Safe zones & no-occlusion (防遮挡)
+
+**The one rule:** opaque carriers — `card` / `card-panel` / `media-frame` (all white/solid) — MAY sit on top of background art; their text stays legible inside them. **Bare text** (eyebrow, page-title, quote, lead, bullets, caption, metric numerals, any text placed straight on `.pad`) MUST land in a **safe zone** that clears the background's brand art — especially its mid/high-saturation blocks. Never let bare text collide with the art, another text block, a media frame, or the footer.
+
+Per-background art vs. safe zone (1920×1080 coords):
+
+| Background | Art occupies (keep bare text OUT) | Safe zone for bare text |
+|---|---|---|
+| `bg-light-rings-*` / `bg-light-content` | right-top radar rings (x>~1250, y<~560); **right diagonal color block (x>~1520 — most saturated, worst)**; bottom-right rings (x>~600, y>~560) | **top-left**: x 80–1200, y 64–560; full-height left column x 80–560 |
+| `bg-light-mark` (quote) | M/X mark top-right (x>~950, y<~580) | left ~60% (x<950) full height; lower band y>580 |
+| `bg-light-arc` (dense/data/TOC) | small arc, top-right corner only (x>~1500, y<~300) | ~everywhere else — the quietest bg; use it for tables / TOC / charts |
+| `bg-cover-coral` (cover/closing) | right ~45% (M/X + AI head + gold arrow) | left 55% (x<~1050) |
+| `bg-section-red` (section) | gold arrow bottom-right | left column; avoid bottom-right |
+| `bg-coral-cta` (transition/CTA) | speech-bubble top-right + search bar bottom-center | one line mid-page, clear of both |
+
+**Always, on every page:** keep every element's bottom ≤ ~950px so nothing overlaps the **footer bar** (`bottom:22`, ~46px tall — media classes already set `bottom:130`); give 2-column `lv-split` / `split` a `gap ≥ 70px` so the text column and the media never touch; put a media frame's **title above and caption below** the frame — never lay bare text over an image/video (only the small opaque `play-badge`); the quote glyph (12% opacity) sits behind/above the statement, never over the words. When bare text has nowhere clear to go, wrap it in a `card` (opaque) or switch to `bg-light-arc`.
+
 ## Layout
 
 A consistent **80px left/right margin** is the spine. White-register pages follow: eyebrow (coral) → page-title (ink, 80px) at top-left (margin-top 64px); content region **directly below, sitting close to the title** — the title bottom lands ~211px, so start the content region at ~262–322px (only a ~55–60px gap) and let it fill downward; **don't strand content in the vertical middle** with a big empty band under the title; **footer logo bar** at the bottom. The footer bar = logo left + "Intelligence with Everyone" wordmark(slogan) right (**logo-colorful on light / logo-white on dark**), **no page number**, present on every non-cover slide. Coral-register pages center or left-align a single dominant element and skip the panel/card system.
