@@ -141,7 +141,7 @@ components:
     spec: "Coral-tint (8%) rounded box holding one agent instruction line, prefixed by a small coral arrow icon (inline SVG) + a '一句话指令' label. The signature copy-this-prompt element."
 
 archetypes:
-  cover:       "标题页 — bg-cover-coral; top-anchored big display title (~120-164px, start ~top:170) + white subtitle + short gold accent line; presenter line (name + role, NO '汇报人' label, no date) upper-middle (~top:600); logo-and-tagline-white (full lockup, mark+wordmark+tagline) bottom-left (~88px); NO footer bar, NO eyebrow."
+  cover:       "标题页 — bg-cover-coral; top-anchored big display title (~128px, like the master's 48pt, start ~top:110) + white subtitle + short gold accent line; NO presenter/name line (matches the master's clean brand cover — title + subtitle + logo only); logo-and-tagline-white (full lockup, mark+wordmark+tagline) bottom-left (~88px); NO footer bar, NO eyebrow."
   toc:         "目录 — light canvas; '目录' page-title; numbered list with Outfit coral-deep index numbers + MiSans items."
   section:     "章节页 — bg-section-red; huge Outfit number + MiSans title; vertical mini-TOC, current item highlighted; white footer bar."
   transition:  "过渡页 — bg-coral-cta; eyebrow PART NN; one big white forward line; gold arrow; logo-and-tagline-white; light footer optional."
@@ -239,7 +239,7 @@ Content density: this is a **reading-capable** brand deck. A body page comfortab
 
 ## The Five Page Archetypes (recipes)
 
-**(a) 标题页 Title** — `bg-cover-coral`. **Top-anchored title block** (start ~top:170px): big white `display` title (~120–164px, 1–2 lines) → white `subtitle` (~44px, weight 500) → a short **gold accent line** (340×6px, `--gold`, radius 3). A **presenter line** sits upper-middle (~top:600px), white ~34px: **name + role separated by spaces — no “汇报人” label, no date** (e.g. `姓名    团队 / 角色`; fill from Phase 0 — never ship a hard-coded person). `logo-and-tagline-white` bottom-left (~88px, `bottom:84`). No footer bar, no eyebrow. Keep the title clear of the right-side brand art (stay left of ~x:1300).
+**(a) 标题页 Title** — `bg-cover-coral`. **Top-anchored title block** (start ~top:110px, sitting high like the master): big white `display` title (**~128px, matching the master's 48pt**, 1–2 lines) → white `subtitle` (~44px, weight 500) → a short **gold accent line** (340×6px, `--gold`, radius 3). **No presenter / name line** — the master cover is a clean brand cover (brand-line title + subtitle + logo only). `logo-and-tagline-white` bottom-left (~88px, `bottom:84`). No footer bar, no eyebrow. Keep the title clear of the right-side brand art (stay left of ~x:1300).
 
 **(b) 正文页 Body** — `bg-light-rings-red`. Header: coral `eyebrow` + ink `page-title` (e.g. 构建围绕 AI 实验的创新文化), small `tag-pill` top-right. Body **starts close under the title** (content-region top ≈ 262–322px, ~55–60px below the title — not floated to mid-page): a `card-panel` holding 3 white `card`s (icon-dot + ink subhead + slate body), OR a 2-column split (left lead + bullets, right a `metric` or product image). `footer-bar` (logo-colorful on this light bg) bottom.
 
