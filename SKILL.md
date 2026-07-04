@@ -49,7 +49,7 @@ Never start generating cold. Run **one lean round** of questions, then confirm a
    - 公开宣讲 → low density, 金句 + 大图, minimal words, more pages.
 3. **Source media** — if the source carries images / videos / **audio**, **default to embedding them all** (download + compress). Don't offer "纯文字" as an equal option; only ask whether to *trim* when there's a lot (全部嵌入 [default] / 精选关键). Real media beats paragraphs — proactively pull every screenshot, clip & recording onto the slides.
 4. **Delivery** — 本地 HTML / 导出 PDF / 发布在线链接 (changes how you finish; see below).
-5. **Cover + closing info** (free text) — deck 标题 + 副标题（品牌语一句） → cover (**no presenter line — the cover matches the master's clean brand cover**); AND **封底放什么二维码** — ask the user **which channel(s)** and the **caption text** for each (官网 / 微信 / 公众号 / 小红书 / 飞书群 / 活动报名 …; **don't assume 官网**). Per QR: take a URL (generate it with `segno`) or an image, and set the caption to that channel's name. **Place the real QR(s) — never ship a "QR" placeholder**; if the user names none, ask rather than defaulting. Infer the deck title from the doc if not given.
+5. **Cover + closing info** (free text) — presenter 署名（名字 + 角色/title，**只放这两项、不加 "汇报人" 标签词**）, deck 标题 + 副标题 → cover; AND **封底放什么二维码** — ask the user **which channel(s)** and the **caption text** for each (官网 / 微信 / 公众号 / 小红书 / 飞书群 / 活动报名 …; **don't assume 官网**). Per QR: take a URL (generate it with `segno`) or an image, and set the caption to that channel's name. **Place the real QR(s) — never ship a "QR" placeholder**; if the user names none, ask rather than defaulting. Infer the deck title from the doc if not given.
 
 **Then confirm an outline BEFORE building.** Propose a per-page list (page type + one-line content each), e.g. `01 封面 · 02 目录 · 03 章节… · 04 正文… · …`, and get a quick 确认/调整. This is the single biggest way to avoid rework — never skip it.
 
@@ -81,7 +81,7 @@ Never start generating cold. Run **one lean round** of questions, then confirm a
    Keep the audio track (`-c:a aac`) to preserve narration; only `-an` if genuinely silent. (107MB → ~6.5MB in the example.)
 5. **Author slides** from components: cover/toc/section + `level-detail` (lv-split + demo video) + `case-gallery` (media2/media3 of screenshots/whiteboards) + `metrics`/`charts` + quote + `link-btn`/`link-chip`/`prompt-box` + closing.
 6. **Assemble** by reusing `gallery.html`'s head: split it at `id="deckStage">` … `\n</main>`, drop your `<section>`s in between, keep the tail (JS). This inherits the whole stylesheet. Keep a deck's task-specific media in its own local `media/` folder and reference the skill's shared `assets/…`.
-7. **Render-verify** (below). Fix any `OVERFLOW` or 遮挡 (occlusion), then open.
+7. **Render-verify** (below) — three gates: overflow + 遮挡 + **Vision QA (视觉语义校验，收尾必做)**; fix all, then open.
 
 ## Media, video & links (rules — full detail in design.md)
 - **Proactively embed source media** — if the doc has images / videos / audio, download → compress → place them; a text-only deck built from a media-rich source is a miss, not the safe default.
@@ -92,11 +92,14 @@ Never start generating cold. Run **one lean round** of questions, then confirm a
 - Links: `link-btn` (CTA: 领取/体验同款/预约) · `link-chip` (reference URLs) · `prompt-box` (a copy-me agent instruction).
 
 ## Render-verify (mandatory before delivery)
-Screenshot every page with headless Chrome/Playwright at 1280×720 (dsf 1.5). **Two gates:**
+Screenshot every page with headless Chrome/Playwright at 1280×720 (dsf 1.5). **Three gates:**
 1. **Overflow** — assert no element exceeds the 1920×1080 stage (`OVERFLOW=[]`).
 2. **Occlusion / 遮挡** — eyeball every page for collisions: (a) bare text on background art (esp. a saturated color block) so it's hard to read; (b) any element overlapping the footer bar; (c) a two-column text block & media touching; (d) a caption laid over an image; (e) a title/quote hitting a corner M/X mark. Check bare-text positions against each background's **safe zone** (design.md → Safe zones). Opaque `card`/`media-frame` covering art is fine — only bare text / transparent elements count.
+3. **Vision QA / 视觉语义校验（收尾最后一步，必做）** — geometry (Overflow) + eyeballing still miss legibility problems, so feed **every page screenshot** to a vision model (`vision_analyze` — e.g. an understand-image tool, or just read the screenshot with vision) for a semantic health-check; the **cover / 首页 is mandatory**. Ask per page, fix per answer, re-run until every page comes back PASS.
+   - **首页 prompt:** `vision_analyze: "检查这张 PPT 首页：主标题、副标题、署名（名字+title）、左下 Logo 是否完整、清晰、可读？有没有文字溢出画面边缘、被背景图形/色块遮挡、被裁切、对比度过低看不清？是否出现『汇报人』三个字（不该有）？署名是否只有名字+title？逐项回答并指出问题的大致位置。"`
+   - **通用页 prompt:** `vision_analyze: "检查这张 PPT：所有文字（标题/正文/图注/数字）是否完整可读、无溢出边缘、无被背景艺术或图片/视频遮挡、无难看换行（词被拆断/孤字）；图片/视频是否完整未变形；页脚 logo+slogan 是否完整未被压盖；左右两栏是否重叠。有问题就列出『问题 + 大致位置』，全部正常回 PASS。"`
 
-Fix by moving text into the safe zone, shrinking a title, switching to a quieter background (`bg-light-arc`), wrapping the text in a `card`, or splitting the slide — never ship overlap or overflow.
+Fix by moving text into the safe zone, shrinking a title, switching to a quieter background (`bg-light-arc`), wrapping the text in a `card`, or splitting the slide — never ship an overflow, an overlap, or a Vision-QA fail.
 
 ## Non-negotiable brand rules
 Coral only in art + accents; headlines ink-on-white / white-on-coral (never coral); every numeral & pure-Latin word in Outfit, every CJK run in MiSans, one ASCII space between them; **never break CJK mid-word (自｜动) or strand a Latin token at a line-end** (`word-break:keep-all` on blurbs/cards, `<br>` + `.nb` nowrap on titles/quotes so keywords like 「生成」 never split); **no emoji anywhere — use inline SVG line icons (`stroke="currentColor"`) in `icon`/`glyph` boxes**; cards are white-on-`#F3F4F7` with **no borders/shadows** (depth = tint + radius); on content pages the body **sits close under the title** (content-region top ≈ 262–322px, only a ~55–60px gap — never stranded mid-page); footer logo bar on every non-cover slide (**logo bottom-left + "Intelligence with Everyone" wordmark bottom-right — no page number; colorful logo+tagline on light bg, white on dark/coral bg**); **封底 = big logo-and-tagline-white top-left + the real QR(s) the user chose in Phase 0 bottom-left (`left:40`; caption = that channel's name — 官网/微信/公众号/小红书/飞书…, don't assume 官网; never a "QR" placeholder, no contact block; QR tile + caption share one center, so set pad width = tile width)**; smallest on-slide text **≥ 24px** (never tiny); MiSans/Outfit/DM Sans self-hosted from `assets/fonts` (fallback → PingFang SC → Noto Sans SC → system).
