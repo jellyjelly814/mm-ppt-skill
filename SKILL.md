@@ -92,17 +92,32 @@ Never start generating cold. Run **one lean round** of questions, then confirm a
 - Links: `link-btn` (CTA: 领取/体验同款/预约) · `link-chip` (reference URLs) · `prompt-box` (a copy-me agent instruction).
 
 ## Render-verify (mandatory before delivery)
-Screenshot every page with headless Chrome/Playwright at 1280×720 (dsf 1.5). **Three gates:**
+Screenshot every page with headless Chrome/Playwright at 1280×720 (dsf 1.5). **Four gates:**
 1. **Overflow** — assert no element exceeds the 1920×1080 stage (`OVERFLOW=[]`).
-2. **Occlusion / 遮挡** — eyeball every page for collisions: (a) bare text on background art (esp. a saturated color block) so it's hard to read; (b) any element overlapping the footer bar; (c) a two-column text block & media touching; (d) a caption laid over an image; (e) a title/quote hitting a corner M/X mark. Check bare-text positions against each background's **safe zone** (design.md → Safe zones). Opaque `card`/`media-frame` covering art is fine — only bare text / transparent elements count.
-3. **Vision QA / 视觉语义校验（收尾最后一步，必做）** — geometry (Overflow) + eyeballing still miss legibility problems, so feed **every page screenshot** to a vision model (`vision_analyze` — e.g. an understand-image tool, or just read the screenshot with vision) for a semantic health-check; the **cover / 首页 is mandatory**. Ask per page, fix per answer, re-run until every page comes back PASS.
+2. **Font floor / 字号下限（硬性）** — assert **no reading text renders under 24px**: read `getComputedStyle(el).fontSize` for every text node and flag any `< 24px` (`SMALLTEXT=[]`). Exempt **only chrome** — footer wordmark, media overlay play-badge, chart axis ticks, gallery spec/counter chips. A content caption / label / chip / tag / prompt / metric sub-label / media caption under 24px is a **fail** — bump the CSS or split the slide, never shrink below the floor.
+3. **Occlusion / 遮挡** — eyeball every page for collisions: (a) bare text on background art (esp. a saturated color block) so it's hard to read; (b) any element overlapping the footer bar; (c) a two-column text block & media touching; (d) a caption laid over an image; (e) a title/quote hitting a corner M/X mark. Check bare-text positions against each background's **safe zone** (design.md → Safe zones). Opaque `card`/`media-frame` covering art is fine — only bare text / transparent elements count.
+4. **Vision QA / 视觉语义校验（收尾最后一步，必做）** — geometry (Overflow + Font floor) + eyeballing still miss legibility problems, so feed **every page screenshot** to a vision model (`vision_analyze` — e.g. an understand-image tool, or just read the screenshot with vision) for a semantic health-check; the **cover / 首页 is mandatory**. Ask per page, fix per answer, re-run until every page comes back PASS.
    - **首页 prompt:** `vision_analyze: "检查这张 PPT 首页：主标题、副标题、署名（名字+title）、左下 Logo 是否完整、清晰、可读？有没有文字溢出画面边缘、被背景图形/色块遮挡、被裁切、对比度过低看不清？是否出现『汇报人』三个字（不该有）？署名是否只有名字+title？逐项回答并指出问题的大致位置。"`
-   - **通用页 prompt:** `vision_analyze: "检查这张 PPT：所有文字（标题/正文/图注/数字）是否完整可读、无溢出边缘、无被背景艺术或图片/视频遮挡、无难看换行（词被拆断/孤字）；图片/视频是否完整未变形；页脚 logo+slogan 是否完整未被压盖；左右两栏是否重叠。有问题就列出『问题 + 大致位置』，全部正常回 PASS。"`
+   - **通用页 prompt:** `vision_analyze: "检查这张 PPT：所有文字（标题/正文/图注/数字）是否完整可读、无溢出边缘、无被背景艺术或图片/视频遮挡、无难看换行（词被拆断/孤字）、有没有正文/图注/标签字号过小到看不清（正文类文字应 ≥24px，不能太小）；图片/视频是否完整未变形；页脚 logo+slogan 是否完整未被压盖；左右两栏是否重叠。有问题就列出『问题 + 大致位置』，全部正常回 PASS。"`
+
+**Font-floor 快检（Gate 2，可直接跑）** — `getComputedStyle` 的 `fontSize` 不受舞台 `transform:scale` 影响，所以判定精确等于源码里 @1920 的字号。粘进每页上下文（Playwright `page.evaluate` / DevTools console），`SMALLTEXT=[]` 即过：
+
+```js
+const EXEMPT='.footer-bar,.footer-bar *,.play-badge,.arch-chip,#deckControls,.board,.board *';
+const small=[];
+document.querySelectorAll('.slide *').forEach(el=>{
+  if(el.closest(EXEMPT))return;                                   // 只豁免 chrome
+  if(![...el.childNodes].some(n=>n.nodeType===3&&n.textContent.trim()))return; // 只看直接含文字的元素
+  const px=parseFloat(getComputedStyle(el).fontSize);
+  if(px<24)small.push(((el.className||el.tagName)+'').trim()+' → '+px+'px');
+});
+console.log('SMALLTEXT=',small);
+```
 
 Fix by moving text into the safe zone, shrinking a title, switching to a quieter background (`bg-light-arc`), wrapping the text in a `card`, or splitting the slide — never ship an overflow, an overlap, or a Vision-QA fail.
 
 ## Non-negotiable brand rules
-Coral only in art + accents; headlines ink-on-white / white-on-coral (never coral); every numeral & pure-Latin word in Outfit, every CJK run in MiSans, one ASCII space between them; **never break CJK mid-word (自｜动) or strand a Latin token at a line-end** (`word-break:keep-all` on blurbs/cards, `<br>` + `.nb` nowrap on titles/quotes so keywords like 「生成」 never split); **no emoji anywhere — use inline SVG line icons (`stroke="currentColor"`) in `icon`/`glyph` boxes**; cards are white-on-`#F3F4F7` with **no borders/shadows** (depth = tint + radius); on content pages the body **sits close under the title** (content-region top ≈ 262–322px, only a ~55–60px gap — never stranded mid-page); footer logo bar on every non-cover slide (**logo bottom-left + "Intelligence with Everyone" wordmark bottom-right — no page number; colorful logo+tagline on light bg, white on dark/coral bg**); **封底 = big logo-and-tagline-white top-left + the real QR(s) the user chose in Phase 0 bottom-left (`left:40`; caption = that channel's name — 官网/微信/公众号/小红书/飞书…, don't assume 官网; never a "QR" placeholder, no contact block; QR tile + caption share one center, so set pad width = tile width)**; smallest on-slide text **≥ 24px** (never tiny); MiSans/Outfit/DM Sans self-hosted from `assets/fonts` (fallback → PingFang SC → Noto Sans SC → system).
+Coral only in art + accents; headlines ink-on-white / white-on-coral (never coral); every numeral & pure-Latin word in Outfit, every CJK run in MiSans, one ASCII space between them; **never break CJK mid-word (自｜动) or strand a Latin token at a line-end** (`word-break:keep-all` on blurbs/cards, `<br>` + `.nb` nowrap on titles/quotes so keywords like 「生成」 never split); **no emoji anywhere — use inline SVG line icons (`stroke="currentColor"`) in `icon`/`glyph` boxes**; cards are white-on-`#F3F4F7` with **no borders/shadows** (depth = tint + radius); on content pages the body **sits close under the title** (content-region top ≈ 262–322px, only a ~55–60px gap — never stranded mid-page); footer logo bar on every non-cover slide (**logo bottom-left + "Intelligence with Everyone" wordmark bottom-right — no page number; colorful logo+tagline on light bg, white on dark/coral bg**); **封底 = big logo-and-tagline-white top-left + the real QR(s) the user chose in Phase 0 bottom-left (`left:40`; caption = that channel's name — 官网/微信/公众号/小红书/飞书…, don't assume 官网; never a "QR" placeholder, no contact block; QR tile + caption share one center, so set pad width = tile width)**; smallest **reading text ≥ 24px** — 硬性下限，最小号字体不能太小；正文/图注/标签/指标小注/图说/链接 chip/标签 pill/prompt 全部 ≥24px；只有 chrome（页脚 wordmark、媒体角标、图表刻度、gallery 规格/计数小字）可更小；放不下就拆页，绝不缩到 24px 以下； MiSans/Outfit/DM Sans self-hosted from `assets/fonts` (fallback → PingFang SC → Noto Sans SC → system).
 
 ## Asset map (assets/)
 - `bg-cover-coral.png` — 标题页 cover (M/X + AI head + gold arrow); also system covers.

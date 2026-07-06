@@ -59,15 +59,16 @@ typography:
     subtitle:        { px: 37,  pt: 14,  family: display, weight: 400, use: "Cover subtitle / lead caption (MiSans Regular)" }
     body:            { px: 28,  pt: 10.5, family: display, weight: 400, use: "Standard body / list (MiSans Regular)" }
     body-sm:         { px: 24,  pt: 9,   family: display, weight: 400, use: "Dense body (MiSans Regular)" }
-    caption:         { px: 21,  pt: 8,   family: display, weight: 400, use: "Caption / placeholder body (MiSans Regular, often slate)" }
-    micro:           { px: 18,  pt: 6.75, family: display, weight: 400, use: "Micro caption, footnote (slate)" }
-    axis:            { px: 16,  pt: 6,   family: num,     weight: 400, use: "Chart axis ticks (Outfit, slate-light)" }
+    caption:         { px: 24,  pt: 9,   family: display, weight: 400, use: "Caption / small body / label — THE READING FLOOR (≥24px; MiSans Regular, often slate). Never smaller for text a viewer reads." }
+    micro:           { px: 18,  pt: 6.75, family: display, weight: 400, use: "CHROME ONLY — footer wordmark / overlay badge / spec-sheet label. NOT for slide reading text." }
+    axis:            { px: 16,  pt: 6,   family: num,     weight: 400, use: "CHROME ONLY — chart axis ticks / scaffold (Outfit, slate-light). NOT for slide reading text." }
   rules:
     - "Every numeral, %, and pure-Latin word is Outfit. Every CJK run is MiSans. Never cross."
     - "CJK letter-spacing: 0. Outfit numerals/labels may use tracking; small Latin labels may be UPPERCASE."
     - "CJK line-height: 1.25 display, 1.6-1.75 body. Latin numerals line-height 1.0-1.1."
     - "Headlines are ink (#000) on light, white on coral. Coral is for eyebrows/numerals/highlights, never the headline body."
     - "Insert a space between CJK and Latin/number (盘古之白): '生成式 AI'，'M2 的 Agent 能力'."
+    - "READING-TEXT FLOOR = 24px. Every piece of text a viewer reads (body, caption, label, metric sub-label, media caption, link chip, tag, prompt, timeline step) is ≥24px. Only true chrome may go below: footer wordmark, media overlay badge, chart axis ticks, gallery spec/counter chips. If content won't fit at 24px, split the slide — never shrink reading text below the floor."
 
 # ---------- SPACING (px @ 1920x1080 stage) ----------
 spacing:
@@ -192,7 +193,7 @@ Use coral for **emphasis moments only**: eyebrow labels, the leading numeral of 
 - 金句 statements: MiSans Demibold `quote` 107px with coral keyword runs.
 - Lead/subhead: MiSans Medium `h2` 53px.
 - Eyebrow + card subhead: MiSans Demibold `eyebrow` 37px (coral for eyebrow, ink for card subhead).
-- Body: MiSans Regular 24–28px; caption/placeholder 18–21px in slate.
+- Body: MiSans Regular 24–28px; caption/label 24px in slate (the reading floor). Never shrink text a viewer reads below 24px.
 - Stats: Outfit Medium 144px (hero) / 80px (secondary), coral numeral + ink `%`.
 
 CJK adjustments (mandatory): letter-spacing 0 on CJK; line-height 1.25 display / 1.6–1.75 body; full-width CJK punctuation；no uppercase on CJK; one ASCII space between CJK and Latin/number. Numerals stay Latin Arabic in Outfit even inside Chinese sentences.
@@ -235,7 +236,7 @@ Per-background art vs. safe zone (1920×1080 coords):
 
 A consistent **80px left/right margin** is the spine. White-register pages follow: eyebrow (coral) → page-title (ink, 80px) at top-left (margin-top 64px); content region **directly below, sitting close to the title** — the title bottom lands ~211px, so start the content region at ~262–322px (only a ~55–60px gap) and let it fill downward; **don't strand content in the vertical middle** with a big empty band under the title; **footer logo bar** at the bottom. The footer bar = logo left + "Intelligence with Everyone" wordmark(slogan) right (**logo-colorful on light / logo-white on dark**), **no page number**, present on every non-cover slide. Coral-register pages center or left-align a single dominant element and skip the panel/card system.
 
-Content density: this is a **reading-capable** brand deck. A body page comfortably holds a 3-card row or a 2-column text+metric split. If content exceeds that, split to a new slide — never shrink body below `caption` (21px) or crowd the panel.
+Content density: this is a **reading-capable** brand deck. A body page comfortably holds a 3-card row or a 2-column text+metric split. If content exceeds that, split to a new slide — never shrink reading text below the 24px floor (`caption`) or crowd the panel.
 
 ## The Five Page Archetypes (recipes)
 
@@ -301,7 +302,7 @@ Real screenshots, videos, **audio**, and clickable links are first-class — a b
 - Don't uppercase or letter-space CJK; don't omit the CJK↔Latin space.
 - Don't let CJK break mid-word (自｜动) or strand a Latin token at a line-end — use `word-break:keep-all` on blurbs/cards, and `<br>` + `.nb` (nowrap) on titles/quotes so keywords never split.
 - Don't use emoji anywhere (🎬🤖💡… included). Use inline SVG line icons instead — `stroke="currentColor"`, white inside coral `icon`/`glyph` boxes, coral elsewhere. Emoji render inconsistently across OSes and break the brand look.
-- Don't shrink on-slide text below ~24px (≈9pt). The source template drops to 5.25pt for dense data labels, but slide text **floors at 24px** for legibility (captions ≥24px, body ≥27px, labels ≥24px). "最小号的字体不要太小。"
+- Don't shrink reading text below 24px (≈9pt) — the **hard floor** for anything a viewer reads (body, caption, label, metric sub-label, media caption, chip, tag, prompt, step). The source template drops to 5.25pt for dense data labels; mm-ppt does not. Only true chrome may go smaller (footer wordmark, media overlay badge, chart axis ticks, gallery spec/counter chips). If it won't fit at 24px, **split the slide — don't shrink**. "最小号的字体不能太小。"
 
 ## CJK Notes
 
@@ -317,4 +318,4 @@ The brand uses **three real faces**, self-hosted in `assets/fonts` as subset wof
 - MiSans full weights are large; the official CDN subsets by glyph so first paint is fast, but on a flaky network the deck falls back to PingFang SC (acceptable, slightly rounder).
 - The background PNGs bake in their art positions; if a title collides with the art, switch to a quieter asset (`bg-light-arc`) rather than repositioning text into the art.
 - The blue secondary palette only has a light-ring asset; a full blue deck needs blue cover/section art produced separately.
-- Body type is intentionally small in the source template (8pt); mm-ppt raises baseline body to 24–28px for speaker legibility — bump to `caption` 21px only for genuinely dense reference slides.
+- Body type is intentionally small in the source template (8pt); mm-ppt raises the baseline to a **24px reading floor** for speaker legibility. There is **no sub-24 exception** for dense slides — if content won't fit at 24px, split to another slide rather than shrinking.
